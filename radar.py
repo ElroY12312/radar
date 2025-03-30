@@ -14,10 +14,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Загружаем переменные окружения
-api_id = int(os.getenv("API_ID", "0"))
-api_hash = os.getenv("API_HASH", "")
-source_channel_id = int(os.getenv("SOURCE_CHANNEL_ID", "0"))
-destination_channel_id = int(os.getenv("DESTINATION_CHANNEL_ID", "0"))
+api_id = 17082218  # Замени на свой API ID
+api_hash = '6015a38682c3f6265ac55a1e35b1240a'  # Замени на свой API Hash
+source_channel_id = -1002279229082  # ID канала-источника
+destination_channel_id = -1002264693466  # ID твоего канала, куда отправляем
 
 if not api_id or not api_hash or not source_channel_id or not destination_channel_id:
     raise ValueError("Одна или несколько переменных окружения не заданы!")
