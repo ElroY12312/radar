@@ -2,6 +2,8 @@ import re
 import os
 import logging
 import asyncio
+import threading
+from flask import Flask
 from telethon import TelegramClient, events
 
 # Настроим логирование
@@ -30,6 +32,16 @@ random_letters_pattern = re.compile(r'^\s*[а-яА-Яa-zA-Z]{4,}\s*$', re.MULTIL
 
 # Добавляемый текст
 extra_text = '🇺🇦 <a href="https://t.me/+9RxqorgcHYZkYTQy">Небесний Вартовий</a>'
+
+@app.route('/')
+def home():
+    return "Бот работает!"
+
+def run_web():
+    app.run(host="0.0.0.0", port=10000)
+
+app = Flask(__name__)
+threading.Thread(target=run_web, daemon=True).start()
 
 @client.on(events.NewMessage(chats=source_channel_id))
 async def handler(event):
