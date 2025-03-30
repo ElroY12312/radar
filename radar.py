@@ -4,7 +4,7 @@ import logging
 import asyncio
 import threading
 from flask import Flask
-from telethon import TelegramClient, events, errors
+from telethon import TelegramClient, events
 
 # Создаём Flask-приложение ДО использования
 app = Flask(__name__)
@@ -52,16 +52,6 @@ async def handler(event):
         message_text = event.message.raw_text or ""
         message_media = event.message.media
 
-        # Проверяем, есть ли у пользователя доступ к каналу-источнику
-        try:
-            entity = await client.get_entity(source_channel_id)
-            if not entity:
-                logger.error("Не удалось получить доступ к каналу-источнику.")
-                return
-        except errors.RPCError as e:
-            logger.error(f"Ошибка доступа к каналу-источнику: {e}")
-            return
-
         # Очистка текста
         message_text = re.sub(url_pattern, '', message_text)
         message_text = re.sub(city_pattern, '', message_text).strip()
@@ -88,23 +78,13 @@ async def handler(event):
             await client.send_message(destination_channel_id, message_text, link_preview=False, parse_mode='html')
             logger.info("Отправлено текстовое сообщение.")
 
-    except errors.FloodWaitError as e:
-        logger.warning(f"Превышен лимит запросов. Ожидание {e.seconds} секунд.")
-        await asyncio.sleep(e.seconds)
-    except errors.RPCError as e:
-        logger.error(f"Ошибка RPC: {e}")
     except Exception as e:
         logger.error(f"Ошибка при обработке сообщения: {e}")
 
 async def main():
-    while True:
-        try:
-            await client.start()
-            logger.info("Бот запущен и ожидает сообщения...")
-            await client.run_until_disconnected()
-        except Exception as e:
-            logger.error(f"Критическая ошибка, перезапуск через 5 секунд: {e}")
-            await asyncio.sleep(5)
+    await client.start()
+    logger.info("Бот запущен и ожидает сообщения...")
+    await client.run_until_disconnected()
 
 if __name__ == "__main__":
     asyncio.run(main())
