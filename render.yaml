@@ -6,11 +6,13 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "bash start.sh"
     envVars:
-      - key: API_ID
-        value: "17082218"
-      - key: API_HASH
-        value: "6015a38682c3f6265ac55a1e35b1240a"
       - key: SOURCE_CHANNEL_ID
         value: "-1001779278127"
       - key: DESTINATION_CHANNEL_ID
         value: "-1002264693466"
+      - key: SESSION_NAME
+        value: "session"
+      - key: PORT
+        value: "10000"
+      - key: PYTHONUNBUFFERED
+        value: "1"

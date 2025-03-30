@@ -3,6 +3,7 @@ import os
 import logging
 import asyncio
 import threading
+import requests
 from flask import Flask
 from telethon import TelegramClient, events
 
@@ -18,11 +19,12 @@ api_id = int(os.getenv("API_ID", "0"))
 api_hash = os.getenv("API_HASH", "")
 source_channel_id = int(os.getenv("SOURCE_CHANNEL_ID", "0"))
 destination_channel_id = int(os.getenv("DESTINATION_CHANNEL_ID", "0"))
+session_name = os.getenv("SESSION_NAME", "session")
 
 if not api_id or not api_hash or not source_channel_id or not destination_channel_id:
-    raise ValueError("Одна или несколько переменных окружения не заданы!")
+    raise ValueError("❌ ОШИБКА: Одна или несколько переменных окружения не заданы!")
 
-client = TelegramClient('session_name', api_id, api_hash)
+client = TelegramClient(session_name, api_id, api_hash)
 
 # Фильтры
 blacklist_words = {"донат", "підтримати", "реклама", "підписка", "переказ на карту",
@@ -44,7 +46,19 @@ def run_web():
     port = int(os.getenv("PORT", 10000))  # Используем переменную окружения для порта
     app.run(host="0.0.0.0", port=port)
 
+def fake_requests():
+    """Фейковые запросы на сервер раз в 5 минут, чтобы Render не отключал сервис."""
+    while True:
+        try:
+            requests.get("https://google.com")
+            logger.info("Фейковый запрос отправлен.")
+        except Exception as e:
+            logger.warning(f"Ошибка при отправке фейкового запроса: {e}")
+        
+        asyncio.run(asyncio.sleep(300))  # 5 минут
+
 threading.Thread(target=run_web, daemon=True).start()
+threading.Thread(target=fake_requests, daemon=True).start()
 
 @client.on(events.NewMessage(chats=source_channel_id))
 async def handler(event):
@@ -87,4 +101,5 @@ async def main():
     await client.run_until_disconnected()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
