@@ -11,6 +11,6 @@ services:
       - key: API_HASH
         value: "6015a38682c3f6265ac55a1e35b1240a"
       - key: SOURCE_CHANNEL_ID
-        value: "-1002279229082"
+        value: "-1001779278127"
       - key: DESTINATION_CHANNEL_ID
         value: "-1002264693466"
