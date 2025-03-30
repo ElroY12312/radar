@@ -6,6 +6,9 @@ import threading
 from flask import Flask
 from telethon import TelegramClient, events
 
+# Создаём Flask-приложение ДО использования
+app = Flask(__name__)
+
 # Настроим логирование
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -40,7 +43,6 @@ def home():
 def run_web():
     app.run(host="0.0.0.0", port=10000)
 
-app = Flask(__name__)
 threading.Thread(target=run_web, daemon=True).start()
 
 @client.on(events.NewMessage(chats=source_channel_id))
