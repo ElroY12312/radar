@@ -41,7 +41,8 @@ def home():
     return "Бот работает!"
 
 def run_web():
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.getenv("PORT", 10000))  # Используем переменную окружения для порта
+    app.run(host="0.0.0.0", port=port)
 
 threading.Thread(target=run_web, daemon=True).start()
 
