@@ -1,3 +1,6 @@
 #!/bin/bash
-python radar.py
-chmod +x start.sh
+while true; do
+  python radar.py
+  sleep 5
+done
+

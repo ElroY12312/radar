@@ -45,12 +45,12 @@ def run_web():
 def fake_requests():
     while True:
         try:
-            requests.get("https://google.com")
-            logger.info("Фейковый запрос отправлен.")
+            requests.get("https://твой-сервис.onrender.com/")
+            logger.info("Фейковый запрос отправлен на Render.")
         except Exception as e:
             logger.warning(f"Ошибка при отправке фейкового запроса: {e}")
         
-        time.sleep(300)
+        time.sleep(120)
 
 threading.Thread(target=run_web, daemon=True).start()
 threading.Thread(target=fake_requests, daemon=True).start()
@@ -89,9 +89,14 @@ async def handler(event):
         logger.error(f"Ошибка при обработке сообщения: {e}")
 
 async def main():
-    await client.start()
-    logger.info("Бот запущен и ожидает сообщения...")
-    await client.run_until_disconnected()
+    while True:
+        try:
+            await client.start()
+            logger.info("Бот запущен и ожидает сообщения...")
+            await client.run_until_disconnected()
+        except Exception as e:
+            logger.error(f"Ошибка: {e}. Перезапуск через 5 секунд...")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
