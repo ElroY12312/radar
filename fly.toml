@@ -1,0 +1,22 @@
+app = "telegram-bot"
+primary_region = "cdg" # Выбери ближайший регион
+
+[build]
+  buildpacks = ["paketo-buildpacks/python"]
+
+[env]
+  SOURCE_CHANNEL_ID = "-1001779278127"
+  DESTINATION_CHANNEL_ID = "-1002264693466"
+  SESSION_NAME = "session"
+  PORT = "10000"
+  PYTHONUNBUFFERED = "1"
+
+[processes]
+  app = "bash start.sh"
+
+[http_service]
+  internal_port = 10000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
