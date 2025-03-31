@@ -21,6 +21,7 @@ api_hash = os.getenv("API_HASH", "")
 source_channel_id = int(os.getenv("SOURCE_CHANNEL_ID", "0"))
 destination_channel_id = int(os.getenv("DESTINATION_CHANNEL_ID", "0"))
 session_name = os.getenv("SESSION_NAME", "session")
+server_url = os.getenv("SERVER_URL", "http://localhost:10000")  # URL для пинга
 
 # Проверка корректности переменных окружения
 if not api_id or not api_hash or not source_channel_id or not destination_channel_id:
@@ -47,22 +48,20 @@ extra_text = '🇺🇦 <a href="https://t.me/+9RxqorgcHYZkYTQy">Небесний
 def home():
     return "Бот работает!"
 
-# Функция для отправки фейковых запросов, чтобы Render не засыпал
-def fake_requests():
+# Функция для регулярного пинга сервера
+
+def ping_server():
     while True:
         try:
-            requests.get("https://твой-сервис.onrender.com/")  # Укажи свой URL
-            requests.get("https://www.google.com/")  # Дополнительный запрос
-            requests.get("https://www.bing.com/")  # Еще один запрос
-            logger.info("Фейковые запросы отправлены.")
+            requests.get(server_url)
+            logger.info("Пинг отправлен на сервер.")
         except Exception as e:
-            logger.warning(f"Ошибка при отправке фейковых запросов: {e}")
-        
-        time.sleep(120)  # Каждые 2 минуты
+            logger.error(f"Ошибка при пинге: {e}")
+        time.sleep(1500)  # 25 минут (1500 секунд)
 
-# Запуск Flask и фейковых запросов в отдельных потоках
+# Запуск Flask и пингера в отдельных потоках
 threading.Thread(target=lambda: app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000))), daemon=True).start()
-threading.Thread(target=fake_requests, daemon=True).start()
+threading.Thread(target=ping_server, daemon=True).start()
 
 # Обработчик новых сообщений из источника
 @client.on(events.NewMessage(chats=source_channel_id))
