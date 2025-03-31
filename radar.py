@@ -13,12 +13,13 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-api_id = int(os.getenv("API_ID", "17082218"))  # Используем переменные окружения для Replit
-api_hash = os.getenv("API_HASH", "6015a38682c3f6265ac55a1e35b1240a")
-source_channel_id = int(os.getenv("SOURCE_CHANNEL_ID", "-1002279229082"))
-destination_channel_id = int(os.getenv("DESTINATION_CHANNEL_ID", "-1002264693466"))
-session_path = os.path.join(os.getcwd(), "session_name.session")  # Используем путь для Replit
-uptime_url = os.getenv("UPTIME_URL", "")  # URL для UptimeRobot
+api_id = int(os.getenv("API_ID"))  # Берём API_ID из Secrets
+api_hash = os.getenv("API_HASH")  # Берём API_HASH из Secrets
+source_channel_id = int(os.getenv("SOURCE_CHANNEL_ID"))  # ID исходного канала
+destination_channel_id = int(os.getenv("DESTINATION_CHANNEL_ID"))  # ID целевого канала
+session_path = os.path.join(os.getcwd(), "session_name.session")  # Путь к сессии
+uptime_url = os.getenv("UPTIME_URL", "")  # URL для UptimeRobot (если есть)
+
 
 if not api_id or not api_hash or not source_channel_id or not destination_channel_id:
     raise ValueError("❌ ОШИБКА: Одна или несколько переменных окружения не заданы!")
