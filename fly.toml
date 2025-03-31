@@ -1,5 +1,5 @@
 app = "telegram-bot"
-primary_region = "cdg" # Выбери ближайший регион
+primary_region = "cdg"
 
 [build]
   buildpacks = ["paketo-buildpacks/python"]
@@ -9,14 +9,11 @@ primary_region = "cdg" # Выбери ближайший регион
   DESTINATION_CHANNEL_ID = "-1002264693466"
   SESSION_NAME = "session"
   PORT = "10000"
-  PYTHONUNBUFFERED = "1"
+  PYTHONUNBUFFERED = "1" # Убери, если добавил через `fly secrets set`
 
 [processes]
-  app = "bash start.sh"
+  app = "python radar.py"  # Или другая команда, которая запускает бота
 
-[http_service]
-  internal_port = 10000
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 1
+[mounts]
+  source = "bot_data"
+  destination = "/data"
