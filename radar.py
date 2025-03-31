@@ -43,29 +43,25 @@ unwanted_text_pattern = re.compile(r'(Підтримати канал, буду 
 
 extra_text = '🇺🇦 <a href="https://t.me/+9RxqorgcHYZkYTQy">Небесний Вартовий</a>'
 
-# Роут для Flask-приложения
 @app.route('/')
 def home():
     return "Бот работает!"
 
-# Функция для запуска Flask-сервера в отдельном потоке
-def run_web():
-    port = int(os.getenv("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
-
-# Функция для отправки фейковых запросов, чтобы приложение не засыпало
+# Функция для отправки фейковых запросов, чтобы Render не засыпал
 def fake_requests():
     while True:
         try:
             requests.get("https://твой-сервис.onrender.com/")  # Укажи свой URL
-            logger.info("Фейковый запрос отправлен на Render.")
+            requests.get("https://www.google.com/")  # Дополнительный запрос
+            requests.get("https://www.bing.com/")  # Еще один запрос
+            logger.info("Фейковые запросы отправлены.")
         except Exception as e:
-            logger.warning(f"Ошибка при отправке фейкового запроса: {e}")
+            logger.warning(f"Ошибка при отправке фейковых запросов: {e}")
         
-        time.sleep(120)
+        time.sleep(120)  # Каждые 2 минуты
 
 # Запуск Flask и фейковых запросов в отдельных потоках
-threading.Thread(target=run_web, daemon=True).start()
+threading.Thread(target=lambda: app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000))), daemon=True).start()
 threading.Thread(target=fake_requests, daemon=True).start()
 
 # Обработчик новых сообщений из источника
