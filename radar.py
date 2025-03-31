@@ -6,7 +6,6 @@ import threading
 import requests
 from flask import Flask
 from telethon import TelegramClient, events
-import time
 
 # Настройка Flask-приложения
 app = Flask(__name__)
@@ -21,7 +20,9 @@ api_hash = os.getenv("API_HASH", "")
 source_channel_id = int(os.getenv("SOURCE_CHANNEL_ID", "0"))
 destination_channel_id = int(os.getenv("DESTINATION_CHANNEL_ID", "0"))
 session_name = os.getenv("SESSION_NAME", "session")
-server_url = os.getenv("SERVER_URL", "http://localhost:10000")  # URL для пинга
+
+# URL для UptimeRobot
+server_url = os.getenv("SERVER_URL", "http://localhost:10000")
 
 # Проверка корректности переменных окружения
 if not api_id or not api_hash or not source_channel_id or not destination_channel_id:
@@ -32,10 +33,8 @@ logger.info(f"API_ID: {api_id}, API_HASH: {api_hash}, SOURCE_CHANNEL_ID: {source
 # Инициализация Telegram-клиента
 client = TelegramClient(session_name, api_id, api_hash)
 
-# Список слов для черного списка
-blacklist_words = {"донат", "підтримати", "реклама", "підписка", "переказ на карту", "пожертва", "допомога", "підтримка", "збір", "задонатити"}
-
 # Регулярные выражения для фильтрации сообщений
+blacklist_words = {"донат", "підтримати", "реклама", "підписка", "переказ на карту", "пожертва", "допомога", "підтримка", "збір", "задонатити"}
 card_pattern = re.compile(r'\b(?:\d[ -]*){12,19}\b|\bUA\d{25,}\b')
 url_pattern = re.compile(r'https?://\S+', re.IGNORECASE)
 city_pattern = re.compile(r'Стежити за обстановкою .*? можна тут - \S+', re.IGNORECASE)
@@ -49,18 +48,17 @@ def home():
     return "Бот работает!"
 
 # Функция для регулярного пинга сервера
-
 def ping_server():
     while True:
         try:
             requests.get(server_url)
-            logger.info("Пинг отправлен на сервер.")
+            logger.info("Пинг отправлен на сервер (UptimeRobot).")
         except Exception as e:
             logger.error(f"Ошибка при пинге: {e}")
-        time.sleep(1500)  # 25 минут (1500 секунд)
+        asyncio.run(asyncio.sleep(1500))  # 25 минут (UptimeRobot пингует раз в 5 минут)
 
 # Запуск Flask и пингера в отдельных потоках
-threading.Thread(target=lambda: app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000))), daemon=True).start()
+threading.Thread(target=lambda: app.run(host="0.0.0.0", port=10000), daemon=True).start()
 threading.Thread(target=ping_server, daemon=True).start()
 
 # Обработчик новых сообщений из источника
@@ -114,5 +112,4 @@ async def main():
 
 # Запуск асинхронной функции
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
